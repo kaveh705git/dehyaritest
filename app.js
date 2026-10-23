@@ -5,8 +5,8 @@ const FALLBACK = {
 };
 let DATA = null, editingDehyariIndex = null;
 
-// 🔐 رمز عبور ورود به سایت (ساده و تضمینی)
-const SITE_PASSWORD = "1234";
+// 🔐 رمز عبور ساده و تضمینی (بدون هش)
+const SITE_PASSWORD = "1234"; 
 const SECRET_FIELD_PASSWORD = "5555"; 
 
 window.checkSitePassword = function() {
@@ -19,6 +19,7 @@ window.checkSitePassword = function() {
     document.getElementById("sitePassError").style.display = "block";
   }
 };
+
 function checkSiteGate() {
   if (localStorage.getItem("dehyari_site_logged_in") === "true") {
     document.getElementById("login-gate").style.display = "none";
@@ -28,6 +29,47 @@ function checkSiteGate() {
 
 window.toggleTheme = function() {
   document.body.classList.toggle("dark-mode");
+  const isDark = document.body.classList.contains("dark-mode");
+  localStorage.setItem("dehyari_theme", isDark ? "dark" : "light");
+  document.getElementById("themeToggle").textContent = isDark ? "☀️" : "🌙";
+};
+function loadTheme() {
+  if (localStorage.getItem("dehyari_theme") === "dark") {
+    document.body.classList.add("dark-mode");
+    const btn = document.getElementById("themeToggle");
+    if(btn) btn.textContent = "☀️";
+  }
+}
+
+window.filterDehyari = function() {
+  const search = document.getElementById("searchInput").value.trim();
+  const sel = document.getElementById("dehyariSelect");
+  if (!DATA || !DATA.dehyaris) return;
+  sel.innerHTML = '<option value="">-- یک دهیاری را انتخاب کنید --</option>';
+  let found = false;
+  DATA.dehyaris.forEach((d, i) => {
+    if (d.name.includes(search)) {
+      const o = document.createElement("option");
+      o.value = i; o.textContent = d.name;
+      sel.appendChild(o);
+      found = true;
+    }
+  });
+  if (!found && search !== "") {
+    const o = document.createElement("option");
+    o.value = ""; o.textContent = "موردی یافت نشد";
+    sel.appendChild(o);
+  }
+};
+
+window.selectDehyari = function(id) {
+  document.getElementById("dehyariDropdown").style.display = "none";
+  document.getElementById("searchInput").value = "";
+  showDehyari(id);
+  populateSelect();
+};
+
+window.printDehyari = function() { window.print(); };
   const isDark = document.body.classList.contains("dark-mode");
   localStorage.setItem("dehyari_theme", isDark ? "dark" : "light");
   document.getElementById("themeToggle").textContent = isDark ? "☀️" : "🌙";
