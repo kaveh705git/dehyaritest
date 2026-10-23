@@ -190,18 +190,24 @@ window.generateIDCard = function() {
     if (v && typeof v === 'object' && v.type === 'image' && v.img) imgUrl = v.img;
   });
 
+  // 🔴 تغییر مهم: عکس پس‌زمینه به صورت تکراری در کل کارت پخش می‌شود
   let bgImageHTML = "";
   if (d.cardBgImage) {
-    bgImageHTML = `<img src="${d.cardBgImage}" style="position: absolute; left: -20px; top: 80px; width: 220px; height: 220px; opacity: 0.15; object-fit: contain; pointer-events: none;">`;
+    bgImageHTML = `<div style="position: absolute; inset: 0; opacity: 0.15; background-image: url('${d.cardBgImage}'); background-size: 100px 100px; background-repeat: repeat; background-position: center; z-index: 1;"></div>`;
   }
 
   const cardHTML = `
     <div id="printable-card" style="width: 600px; height: 350px; background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%); border-radius: 20px; border: 4px solid #4fc3f7; padding: 20px; display: flex; font-family: Tahoma, sans-serif; position: relative; overflow: hidden; direction: rtl; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+      
+      <!-- عکس پس‌زمینه تکراری -->
       ${bgImageHTML}
+
       <div style="position: absolute; top: 0; left: 0; right: 0; height: 70px; background: #4fc3f7; border-radius: 15px 15px 0 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; font-weight: bold; z-index: 2;">کارت شناسایی دهیاری</div>
+      
       <div style="margin-top: 80px; width: 150px; height: 150px; border-radius: 15px; border: 4px solid #29b6f6; background: #e1f5fe; overflow: hidden; flex-shrink: 0; z-index: 2;">
         ${imgUrl ? `<img src="${imgUrl}" style="width: 100%; height: 100%; object-fit: cover;">` : `<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#6ba3c9;">بدون عکس</div>`}
       </div>
+      
       <div style="margin-top: 80px; margin-right: 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; z-index: 2;">
         <div>
           <h2 style="color: #0277bd; margin: 0 0 10px 0; font-size: 24px;">${name}</h2>
@@ -214,6 +220,8 @@ window.generateIDCard = function() {
           <p style="margin: 0;">تاریخ صدور: ${new Date().toLocaleDateString('fa-IR')}</p>
         </div>
       </div>
+      
+      <!-- شکل تزئینی پایین -->
       <div style="position: absolute; bottom: -50px; left: -50px; width: 200px; height: 200px; background: rgba(79, 195, 247, 0.1); border-radius: 50%; z-index: 1;"></div>
     </div>
   `;
