@@ -6,11 +6,14 @@ const FALLBACK = {
 let DATA = null, editingDehyariIndex = null;
 
 // 🔐 رمزها به صورت هش برای امنیت بیشتر
-const SITE_PASSWORD_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4"; // هش رمز 1234
-const SECRET_FIELD_HASH = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"; // هش رمز 5555
+// 🔐 هش رمز 1234 (بدون salt)
+const SITE_PASSWORD_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+// 🔐 رمز مشاهده اطلاعات حساس (به صورت ساده - بعدا امنش می‌کنیم)
+const SECRET_FIELD_PASSWORD = "5555"; 
 
+// تابع هش کردن رمز (دقیقاً همان چیزی که تایپ می‌شود)
 async function hashPass(pass) { 
-  const enc = new TextEncoder().encode(pass + "|salt"); 
+  const enc = new TextEncoder().encode(pass); // بدون |salt
   const buf = await crypto.subtle.digest("SHA-256", enc); 
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join(""); 
 }
@@ -241,14 +244,17 @@ function openAdmin() {
 }
 window.closeAdmin = function() { document.getElementById("adminModal").classList.remove("active"); };
 
-window.checkPassword = async function() {
-  const pass = document.getElementById("adminPassword").value; if (!pass) { alert("رمز را وارد کنید."); return; }
-  if (!getStoredHash()) {
-    const pass2 = document.getElementById("adminPassword2").value;
-    if (pass.length < 4) { alert("رمز باید حداقل ۴ کاراکتر باشد."); return; }
-    if (pass !== pass2) { alert("رمزها یکسان نیستند."); return; }
-    setStoredHash(await hashPass(pass)); alert("✅ رمز ادمین تنظیم شد."); enterAdminPanel();
-  } else { if (await verifyPassword(pass)) enterAdminPanel(); else alert("❌ رمز عبور اشتباه است."); }
+window.checkSitePassword = async function() {
+  const inputPass = document.getElementById("sitePassInput").value;
+  const inputHash = await hashPass(inputPass); // هش کردن رمز ورودی
+  
+  if (inputHash === SITE_PASSWORD_HASH) {
+    document.getElementById("login-gate").style.display = "none";
+    document.getElementById("main-site").style.display = "block";
+    localStorage.setItem("dehyari_site_logged_in", "true");
+  } else {
+    document.getElementById("sitePassError").style.display = "block";
+  }
 };
 
 function enterAdminPanel() { document.getElementById("loginScreen").style.display = "none"; document.getElementById("adminPanel").style.display = "flex"; switchTab("sections"); }
