@@ -190,16 +190,16 @@ window.generateIDCard = function() {
     if (v && typeof v === 'object' && v.type === 'image' && v.img) imgUrl = v.img;
   });
 
-  // 🔴 عکس پس‌زمینه (فقط اگر در پنل ادمین آپلود شده باشد)
+  // 🔴 عکس پس‌زمینه در گوشه پایین چپ، با اندازه کوچک و شفافیت
   let bgImageHTML = "";
   if (d.cardBgImage) {
-    bgImageHTML = `<div style="position: absolute; inset: 0; opacity: 0.15; background-image: url('${d.cardBgImage}'); background-size: 100px 100px; background-repeat: repeat; background-position: center; z-index: 1;"></div>`;
+    bgImageHTML = `<div style="position: absolute; bottom: 20px; left: 20px; width: 100px; height: 100px; opacity: 0.2; background-image: url('${d.cardBgImage}'); background-size: contain; background-repeat: no-repeat; background-position: bottom left; z-index: 1;"></div>`;
   }
 
   const cardHTML = `
     <div id="printable-card" style="width: 600px; height: 350px; background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%); border-radius: 20px; border: 4px solid #4fc3f7; padding: 20px; display: flex; font-family: Tahoma, sans-serif; position: relative; overflow: hidden; direction: rtl; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
       
-      <!-- عکس پس‌زمینه تکراری -->
+      <!-- عکس پس‌زمینه در گوشه پایین چپ -->
       ${bgImageHTML}
 
       <div style="position: absolute; top: 0; left: 0; right: 0; height: 70px; background: #4fc3f7; border-radius: 15px 15px 0 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; font-weight: bold; z-index: 2;">کارت شناسایی دهیاری</div>
