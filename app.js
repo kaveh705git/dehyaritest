@@ -1,4 +1,4 @@
-بهconst FALLBACK = {
+const FALLBACK = {
   siteTitle: "دهیاری‌های بخش مرکزی سقز", siteSub: "سامانه اطلاعات دهیاری‌ها",
   sections: [{ key: "dehyar", label: "👤 مشخصات دهیار" }, { key: "roosta", label: "🏘️ مشخصات روستا" }, { key: "mashin", label: "🚜 ماشین آلات" }, { key: "jamiyat", label: "👥 جمعیت" }, { key: "tarh", label: "📋 طرح‌های اجرا شده" }],
   dehyaris: [{ name: "دهیاری روستای قره‌تپه", fields: { dehyar: { "نام": "علی محمدی", "تلفن": "0912..." }, roosta: { "روستا": "قره‌تپه" }, mashin: {}, jamiyat: {}, tarh: {} } }]
@@ -7,7 +7,7 @@ let DATA = null, editingDehyariIndex = null;
 
 // 🔐 هش رمز 1234 (بدون salt)
 const SITE_PASSWORD_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
-// 🔐 رمز مشاهده اطلاعات حساس (ساده)
+// 🔐 رمز مشاهده اطلاعات حساس
 const SECRET_FIELD_PASSWORD = "5555"; 
 
 async function hashPass(pass) { 
@@ -190,7 +190,6 @@ window.generateIDCard = function() {
     if (v && typeof v === 'object' && v.type === 'image' && v.img) imgUrl = v.img;
   });
 
-  // 🔴 تغییرات: انتقال به گوشه پایین چپ و کوچک‌تر کردن
   let bgImageHTML = "";
   if (d.cardBgImage) {
     bgImageHTML = `<div style="position: absolute; bottom: 15px; right: 15px; width: 80px; height: 80px; opacity: 0.3; background-image: url('${d.cardBgImage}'); background-size: contain; background-repeat: no-repeat; background-position: center; z-index: 1;"></div>`;
@@ -198,16 +197,11 @@ window.generateIDCard = function() {
 
   const cardHTML = `
     <div id="printable-card" style="width: 600px; height: 350px; background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%); border-radius: 20px; border: 4px solid #4fc3f7; padding: 20px; display: flex; font-family: Tahoma, sans-serif; position: relative; overflow: hidden; direction: rtl; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-      
-      <!-- عکس پس‌زمینه در گوشه پایین چپ -->
       ${bgImageHTML}
-
       <div style="position: absolute; top: 0; left: 0; right: 0; height: 70px; background: #4fc3f7; border-radius: 15px 15px 0 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; font-weight: bold; z-index: 2;">کارت شناسایی دهیاری</div>
-      
       <div style="margin-top: 80px; width: 150px; height: 150px; border-radius: 15px; border: 4px solid #29b6f6; background: #e1f5fe; overflow: hidden; flex-shrink: 0; z-index: 2;">
         ${imgUrl ? `<img src="${imgUrl}" style="width: 100%; height: 100%; object-fit: cover;">` : `<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#6ba3c9;">بدون عکس</div>`}
       </div>
-      
       <div style="margin-top: 80px; margin-right: 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; z-index: 2;">
         <div>
           <h2 style="color: #0277bd; margin: 0 0 10px 0; font-size: 24px;">${name}</h2>
@@ -220,8 +214,6 @@ window.generateIDCard = function() {
           <p style="margin: 0;">تاریخ صدور: ${new Date().toLocaleDateString('fa-IR')}</p>
         </div>
       </div>
-      
-      <!-- دایره تزئینی پایین -->
       <div style="position: absolute; bottom: -50px; left: -50px; width: 200px; height: 200px; background: rgba(79, 195, 247, 0.1); border-radius: 50%; z-index: 1;"></div>
     </div>
   `;
@@ -232,6 +224,7 @@ window.generateIDCard = function() {
     const link = document.createElement("a"); link.download = `کارت_شناسایی_${name}.png`; link.href = canvas.toDataURL("image/png"); link.click(); document.body.removeChild(container);
   }).catch(err => { alert("خطا در ساخت کارت: " + err.message); document.body.removeChild(container); });
 };
+
 function getStoredHash() { return localStorage.getItem("dehyari_admin_hash_v7"); }
 function setStoredHash(hash) { localStorage.setItem("dehyari_admin_hash_v7", hash); }
 async function verifyPassword(pass) { const stored = getStoredHash(); if (!stored) return false; return await hashPass(pass) === stored; }
