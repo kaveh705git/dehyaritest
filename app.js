@@ -190,7 +190,7 @@ window.generateIDCard = function() {
     if (v && typeof v === 'object' && v.type === 'image' && v.img) imgUrl = v.img;
   });
 
-  // 🔴 تغییر مهم: عکس پس‌زمینه به صورت تکراری در کل کارت پخش می‌شود
+  // 🔴 عکس پس‌زمینه (فقط اگر در پنل ادمین آپلود شده باشد)
   let bgImageHTML = "";
   if (d.cardBgImage) {
     bgImageHTML = `<div style="position: absolute; inset: 0; opacity: 0.15; background-image: url('${d.cardBgImage}'); background-size: 100px 100px; background-repeat: repeat; background-position: center; z-index: 1;"></div>`;
@@ -221,7 +221,6 @@ window.generateIDCard = function() {
         </div>
       </div>
       
-      <!-- شکل تزئینی پایین -->
       <div style="position: absolute; bottom: -50px; left: -50px; width: 200px; height: 200px; background: rgba(79, 195, 247, 0.1); border-radius: 50%; z-index: 1;"></div>
     </div>
   `;
