@@ -1,4 +1,4 @@
-const FALLBACK = {
+بهconst FALLBACK = {
   siteTitle: "دهیاری‌های بخش مرکزی سقز", siteSub: "سامانه اطلاعات دهیاری‌ها",
   sections: [{ key: "dehyar", label: "👤 مشخصات دهیار" }, { key: "roosta", label: "🏘️ مشخصات روستا" }, { key: "mashin", label: "🚜 ماشین آلات" }, { key: "jamiyat", label: "👥 جمعیت" }, { key: "tarh", label: "📋 طرح‌های اجرا شده" }],
   dehyaris: [{ name: "دهیاری روستای قره‌تپه", fields: { dehyar: { "نام": "علی محمدی", "تلفن": "0912..." }, roosta: { "روستا": "قره‌تپه" }, mashin: {}, jamiyat: {}, tarh: {} } }]
