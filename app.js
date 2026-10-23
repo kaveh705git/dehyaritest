@@ -5,7 +5,6 @@ const FALLBACK = {
 };
 let DATA = null, editingDehyariIndex = null;
 
-// 🔐 رمز عبور ساده و تضمینی (بدون هش)
 const SITE_PASSWORD = "1234"; 
 const SECRET_FIELD_PASSWORD = "5555"; 
 
@@ -29,47 +28,6 @@ function checkSiteGate() {
 
 window.toggleTheme = function() {
   document.body.classList.toggle("dark-mode");
-  const isDark = document.body.classList.contains("dark-mode");
-  localStorage.setItem("dehyari_theme", isDark ? "dark" : "light");
-  document.getElementById("themeToggle").textContent = isDark ? "☀️" : "🌙";
-};
-function loadTheme() {
-  if (localStorage.getItem("dehyari_theme") === "dark") {
-    document.body.classList.add("dark-mode");
-    const btn = document.getElementById("themeToggle");
-    if(btn) btn.textContent = "☀️";
-  }
-}
-
-window.filterDehyari = function() {
-  const search = document.getElementById("searchInput").value.trim();
-  const sel = document.getElementById("dehyariSelect");
-  if (!DATA || !DATA.dehyaris) return;
-  sel.innerHTML = '<option value="">-- یک دهیاری را انتخاب کنید --</option>';
-  let found = false;
-  DATA.dehyaris.forEach((d, i) => {
-    if (d.name.includes(search)) {
-      const o = document.createElement("option");
-      o.value = i; o.textContent = d.name;
-      sel.appendChild(o);
-      found = true;
-    }
-  });
-  if (!found && search !== "") {
-    const o = document.createElement("option");
-    o.value = ""; o.textContent = "موردی یافت نشد";
-    sel.appendChild(o);
-  }
-};
-
-window.selectDehyari = function(id) {
-  document.getElementById("dehyariDropdown").style.display = "none";
-  document.getElementById("searchInput").value = "";
-  showDehyari(id);
-  populateSelect();
-};
-
-window.printDehyari = function() { window.print(); };
   const isDark = document.body.classList.contains("dark-mode");
   localStorage.setItem("dehyari_theme", isDark ? "dark" : "light");
   document.getElementById("themeToggle").textContent = isDark ? "☀️" : "🌙";
@@ -226,6 +184,7 @@ window.generateIDCard = function() {
   let bgImageHTML = "";
   if (d.cardBgImage) {
     bgImageHTML = `<div style="position: absolute; inset: 0; opacity: 0.15; background-image: url('${d.cardBgImage}'); background-size: 80px 80px; background-repeat: repeat; background-position: center; z-index: 1;"></div>`;
+  }
 
   const cardHTML = `
     <div id="printable-card" style="width: 600px; height: 350px; background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%); border-radius: 20px; border: 4px solid #4fc3f7; padding: 20px; display: flex; font-family: Tahoma, sans-serif; position: relative; overflow: hidden; direction: rtl; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
