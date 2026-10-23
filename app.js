@@ -68,8 +68,84 @@ window.selectDehyari = function(id) {
   populateSelect();
 };
 
-window.printDehyari = function() { window.print(); };
+window.printDehyari = function() {
+  const id = document.getElementById("dehyariSelect").value;
+  if (id === "") { alert("لطفاً ابتدا یک دهیاری را انتخاب کنید."); return; }
+  
+  const d = DATA.dehyaris[Number(id)];
+  if (!d) return;
 
+  // ساخت یک صفحه موقت برای چاپ
+  let printHTML = `
+    <div style="direction: rtl; font-family: Tahoma, sans-serif; padding: 20px; color: black;">
+      <h1 style="text-align: center; color: #0277bd; margin-bottom: 20px; border-bottom: 2px solid #0277bd; padding-bottom: 10px;">مشخصات دهیاری: ${escapeHtml(d.name)}</h1>
+  `;
+
+  // پیمایش در تمام بخش‌ها (منوها) و اضافه کردن آن‌ها به صفحه چاپ
+  DATA.sections.forEach(sec => {
+    const fields = (d.fields && d.fields[sec.key]) || {};
+    
+    printHTML += `<div style="margin-bottom: 25px;">
+      <h3 style="background: #e1f5fe; color: #0277bd; padding: 8px; border-radius: 5px; margin-bottom: 10px;">${escapeHtml(sec.label)}</h3>
+      <table style="width: 100%; border-collapse: collapse;">`;
+
+    if (Object.keys(fields).length === 0) {
+      printHTML += `<tr><td style="padding: 10px; text-align: center; color: gray;">اطلاعاتی ثبت نشده است.</td></tr>`;
+    } else {
+      Object.entries(fields).forEach(([k, v]) => {
+        // اگر فیلد عکس بود
+        if (v && typeof v === 'object' && v.type === 'image') {
+          printHTML += `<tr>
+            <td style="padding: 8px; border: 1px solid #ccc; width: 30%; font-weight: bold; background: #f9f9f9;">${escapeHtml(k)}</td>
+            <td style="padding: 8px; border: 1px solid #ccc;">
+              ${v.img ? `<img src="${v.img}" style="max-width: 150px; max-height: 150px; display: block; margin-bottom: 5px;">` : 'بدون عکس'}
+              ${v.text ? `<div style="font-size: 0.9em; color: #555;">${escapeHtml(v.text)}</div>` : ''}
+            </td>
+          </tr>`;
+        } 
+        // اگر فیلد متنی بود
+        else {
+          printHTML += `<tr>
+            <td style="padding: 8px; border: 1px solid #ccc; width: 30%; font-weight: bold; background: #f9f9f9;">${escapeHtml(k)}</td>
+            <td style="padding: 8px; border: 1px solid #ccc;">${escapeHtml(v || "-")}</td>
+          </tr>`;
+        }
+      });
+    }
+    printHTML += `</table></div>`;
+  });
+
+  printHTML += `</div>`;
+
+  // باز کردن یک پنجره جدید در مرورگر برای چاپ
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>چاپ اطلاعات ${d.name}</title>
+        <style>
+          @media print {
+            @page { margin: 15mm; }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            h1 { font-size: 20px; }
+            h3 { font-size: 16px; }
+            table { font-size: 14px; page-break-inside: avoid; }
+            tr { page-break-inside: avoid; }
+          }
+        </style>
+      </head>
+      <body>${printHTML}</body>
+    </html>
+  `);
+  printWindow.document.close();
+  
+  // صبر کردن تا عکس‌ها لود شوند و سپس دستور چاپ
+  setTimeout(() => {
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  }, 1000);
+};
 function loadInitialData() {
   if (typeof INITIAL_DATA !== "undefined") { DATA = JSON.parse(JSON.stringify(INITIAL_DATA)); localStorage.setItem("dehyari_panel_v7", JSON.stringify(DATA)); } 
   else { DATA = JSON.parse(localStorage.getItem("dehyari_panel_v7") || JSON.stringify(FALLBACK)); }
