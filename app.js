@@ -183,7 +183,7 @@ window.generateIDCard = function() {
 
   let bgImageHTML = "";
   if (d.cardBgImage) {
-    bgImageHTML = `<div style="position: absolute; inset: 0; opacity: 0.15; background-image: url('${d.cardBgImage}'); background-size: 80px 80px; background-repeat: repeat; background-position: center; z-index: 1;"></div>`;
+    bgImageHTML = `<div style="position: absolute; bottom: 20px; left: 20px; width: 180px; height: 180px; opacity: 0.15; background-image: url('${d.cardBgImage}'); background-size: contain; background-repeat: no-repeat; background-position: bottom left; z-index: 1;"></div>`; 
   }
 
   const cardHTML = `
