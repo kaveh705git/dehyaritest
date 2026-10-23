@@ -5,15 +5,13 @@ const FALLBACK = {
 };
 let DATA = null, editingDehyariIndex = null;
 
-// 🔐 رمزها به صورت هش برای امنیت بیشتر
 // 🔐 هش رمز 1234 (بدون salt)
 const SITE_PASSWORD_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
-// 🔐 رمز مشاهده اطلاعات حساس (به صورت ساده - بعدا امنش می‌کنیم)
+// 🔐 رمز مشاهده اطلاعات حساس (ساده)
 const SECRET_FIELD_PASSWORD = "5555"; 
 
-// تابع هش کردن رمز (دقیقاً همان چیزی که تایپ می‌شود)
 async function hashPass(pass) { 
-  const enc = new TextEncoder().encode(pass); // بدون |salt
+  const enc = new TextEncoder().encode(pass); 
   const buf = await crypto.subtle.digest("SHA-256", enc); 
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join(""); 
 }
@@ -162,11 +160,10 @@ function renderTabContent(d, secKey) {
   contentArea.innerHTML = inner;
 }
 
-window.revealSecret = async function(secKey, fieldName, realValue) {
+window.revealSecret = function(secKey, fieldName, realValue) {
   const enteredPass = prompt("برای مشاهده این اطلاعات محرمانه، رمز عبور را وارد کنید:");
   if (enteredPass === null) return;
-  const enteredHash = await hashPass(enteredPass);
-  if (enteredHash === SECRET_FIELD_HASH) {
+  if (enteredPass === SECRET_FIELD_PASSWORD) {
     const element = document.getElementById(`secret-${secKey}-${fieldName}`);
     if (element) {
       element.textContent = realValue;
@@ -228,7 +225,6 @@ window.generateIDCard = function() {
   }).catch(err => { alert("خطا در ساخت کارت: " + err.message); document.body.removeChild(container); });
 };
 
-async function hashPassword(pass) { return await hashPass(pass); }
 function getStoredHash() { return localStorage.getItem("dehyari_admin_hash_v7"); }
 function setStoredHash(hash) { localStorage.setItem("dehyari_admin_hash_v7", hash); }
 async function verifyPassword(pass) { const stored = getStoredHash(); if (!stored) return false; return await hashPass(pass) === stored; }
@@ -244,17 +240,14 @@ function openAdmin() {
 }
 window.closeAdmin = function() { document.getElementById("adminModal").classList.remove("active"); };
 
-window.checkSitePassword = async function() {
-  const inputPass = document.getElementById("sitePassInput").value;
-  const inputHash = await hashPass(inputPass); // هش کردن رمز ورودی
-  
-  if (inputHash === SITE_PASSWORD_HASH) {
-    document.getElementById("login-gate").style.display = "none";
-    document.getElementById("main-site").style.display = "block";
-    localStorage.setItem("dehyari_site_logged_in", "true");
-  } else {
-    document.getElementById("sitePassError").style.display = "block";
-  }
+window.checkPassword = async function() {
+  const pass = document.getElementById("adminPassword").value; if (!pass) { alert("رمز را وارد کنید."); return; }
+  if (!getStoredHash()) {
+    const pass2 = document.getElementById("adminPassword2").value;
+    if (pass.length < 4) { alert("رمز باید حداقل ۴ کاراکتر باشد."); return; }
+    if (pass !== pass2) { alert("رمزها یکسان نیستند."); return; }
+    setStoredHash(await hashPass(pass)); alert("✅ رمز ادمین تنظیم شد."); enterAdminPanel();
+  } else { if (await verifyPassword(pass)) enterAdminPanel(); else alert("❌ رمز عبور اشتباه است."); }
 };
 
 function enterAdminPanel() { document.getElementById("loginScreen").style.display = "none"; document.getElementById("adminPanel").style.display = "flex"; switchTab("sections"); }
